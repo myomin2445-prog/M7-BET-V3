@@ -93,11 +93,21 @@ Logout
 <p id="withdrawMsg"></p>
 
 </div>
+  <div class="card">
+
+<h2>⚽ Today's Matches</h2>
+
+<div id="matchList">
+Loading...
+</div>
+
+</div>
 <script type="module">
 import {
   db,
   addDoc,
   collection,
+  getDocs,
   serverTimestamp
 } from "./js/firebase.js";
 
@@ -110,7 +120,35 @@ if (!user) {
 document.getElementById("name").innerHTML = user.name;
 document.getElementById("userid").innerHTML = user.userId;
 document.getElementById("balance").innerHTML = "₩ " + user.balance;
+async function loadMatches(){
 
+const matchList = document.getElementById("matchList");
+matchList.innerHTML = "";
+
+const snap = await getDocs(collection(db,"matches"));
+
+snap.forEach((d)=>{
+
+const m = d.data();
+
+matchList.innerHTML += `
+<div class="card">
+
+<h3>${m.homeTeam} vs ${m.awayTeam}</h3>
+
+<p>${m.league}</p>
+
+<p>⏰ ${m.matchTime}</p>
+
+<p>Status : ${m.status}</p>
+
+</div>
+`;
+
+});
+
+}
+  loadMatches();
 window.depositRequest = async function () {
   const amount = document.getElementById("depositAmount").value;
 
