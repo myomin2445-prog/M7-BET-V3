@@ -72,27 +72,59 @@ Logout
 </button>
 
 </div>
+<div class="card">
 
-<script>
+<h2>Deposit</h2>
 
-const user=JSON.parse(localStorage.getItem("m7User"));
+<input type="number" id="depositAmount" placeholder="Amount W">
 
-if(!user){
-location.href="login.html";
+<button onclick="depositRequest()">Deposit Request</button>
+
+<p id="msg"></p>
+
+</div>
+<script type="module">
+import {
+  db,
+  addDoc,
+  collection,
+  serverTimestamp
+} from "./js/firebase.js";
+
+const user = JSON.parse(localStorage.getItem("m7User"));
+
+if (!user) {
+  location.href = "login.html";
 }
 
-document.getElementById("name").innerHTML=user.name;
-document.getElementById("userid").innerHTML=user.userId;
+document.getElementById("name").innerHTML = user.name;
+document.getElementById("userid").innerHTML = user.userId;
 document.getElementById("balance").innerHTML = "₩ " + user.balance;
 
-function logout(){
+window.depositRequest = async function () {
+  const amount = document.getElementById("depositAmount").value;
 
-localStorage.removeItem("m7User");
+  if (!amount) {
+    document.getElementById("msg").innerHTML = "Enter Amount";
+    return;
+  }
 
-location.href="login.html";
+  await addDoc(collection(db, "deposits"), {
+    userId: user.userId,
+    name: user.name,
+    amount: Number(amount),
+    status: "pending",
+    createdAt: serverTimestamp()
+  });
 
-}
+  document.getElementById("msg").innerHTML = "Deposit Request Sent";
+  document.getElementById("depositAmount").value = "";
+};
 
+window.logout = function () {
+  localStorage.removeItem("m7User");
+  location.href = "login.html";
+};
 </script>
 
 </body>
