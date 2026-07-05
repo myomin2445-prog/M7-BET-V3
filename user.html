@@ -83,6 +83,16 @@ Logout
 <p id="msg"></p>
 
 </div>
+  <div class="card">
+<h2>Withdraw</h2>
+
+<input type="number" id="withdrawAmount" placeholder="Amount W">
+
+<button onclick="withdrawRequest()">Withdraw Request</button>
+
+<p id="withdrawMsg"></p>
+
+</div>
 <script type="module">
 import {
   db,
@@ -120,7 +130,27 @@ window.depositRequest = async function () {
   document.getElementById("msg").innerHTML = "Deposit Request Sent";
   document.getElementById("depositAmount").value = "";
 };
+window.withdrawRequest = async function () {
 
+  const amount = document.getElementById("withdrawAmount").value;
+
+  if (!amount) {
+    document.getElementById("withdrawMsg").innerHTML = "Enter Amount";
+    return;
+  }
+
+  await addDoc(collection(db, "withdraws"), {
+    userId: user.userId,
+    name: user.name,
+    amount: Number(amount),
+    status: "pending",
+    createdAt: serverTimestamp()
+  });
+
+  document.getElementById("withdrawMsg").innerHTML = "Withdraw Request Sent";
+  document.getElementById("withdrawAmount").value = "";
+
+};
 window.logout = function () {
   localStorage.removeItem("m7User");
   location.href = "login.html";
