@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7 BET - User</title>
+
+<style>
+body{
+margin:0;
+background:#111;
+font-family:Arial;
+color:white;
+}
+
+.header{
+background:#00b300;
+padding:15px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+}
+
+.card{
+width:90%;
+max-width:400px;
+margin:30px auto;
+background:#222;
+padding:20px;
+border-radius:15px;
+text-align:center;
+}
+
+.balance{
+font-size:35px;
+color:#00ff66;
+margin:20px 0;
+}
+
+button{
+width:100%;
+padding:15px;
+background:#00b300;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+⚽ M7 BET
+</div>
+
+<div class="card">
+
+<h2 id="name"></h2>
+
+<p>User ID</p>
+
+<h3 id="userid"></h3>
+
+<div class="balance" id="balance"></div>
+
+<button onclick="logout()">
+Logout
+</button>
+
+</div>
+
+<script>
+
+const user=JSON.parse(localStorage.getItem("m7User"));
+
+if(!user){
+location.href="login.html";
+}
+
+document.getElementById("name").innerHTML=user.name;
+document.getElementById("userid").innerHTML=user.userId;
+document.getElementById("balance").innerHTML=user.balance+" MMK";
+
+function logout(){
+
+localStorage.removeItem("m7User");
+
+location.href="login.html";
+
+}
+
+</script>
+
+</body>
+</html>
