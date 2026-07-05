@@ -42,11 +42,11 @@ loginBtn.addEventListener("click", async () => {
       balance: user.balance
     }));
 
-    if (user.role === "admin") {
-      window.location.href = "index.html";
-    } else {
-      window.location.href = "index.html";
-    }
+if (user.role === "admin") {
+    window.location.href = "admin.html";
+} else {
+    window.location.href = "user.html";
+}
 
   } catch (error) {
     message.innerText = "ERROR: " + error.message;
