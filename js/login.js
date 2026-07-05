@@ -30,10 +30,10 @@ loginBtn.addEventListener("click", async () => {
       return;
     }
 
-    if (user.password !== password) {
-      message.innerText = "Password မှားနေပါတယ်";
-      return;
-    }
+    if (String(user.password).trim() !== String(password).trim()) {
+  message.innerText = "Password မှားနေပါတယ်";
+  return;
+}
 
     localStorage.setItem("m7User", JSON.stringify({
       userId: user.userId,
