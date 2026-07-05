@@ -1,34 +1,54 @@
-import { db } from "./firebase.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, doc, getDoc } from "./firebase.js";
 
 const loginBtn = document.getElementById("loginBtn");
 
 loginBtn.addEventListener("click", async () => {
-  const userId = document.getElementById("userId").value;
-  const password = document.getElementById("password").value;
+  const userId = document.getElementById("userId").value.trim();
+  const password = document.getElementById("password").value.trim();
   const message = document.getElementById("message");
 
-  try {
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
+  message.innerText = "";
 
-    if (!docSnap.exists()) {
+  if (!userId || !password) {
+    message.innerText = "User ID နဲ့ Password ထည့်ပါ";
+    return;
+  }
+
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
       message.innerText = "User မရှိပါ";
       return;
     }
 
-    const data = docSnap.data();
+    const user = userSnap.data();
 
-    if (data.Password !== password) {
+    if (user.status !== "active") {
+      message.innerText = "Account ပိတ်ထားပါတယ်";
+      return;
+    }
+
+    if ((user.password || user.Password) !== password) {
       message.innerText = "Password မှားနေပါတယ်";
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(data));
+    localStorage.setItem("m7User", JSON.stringify({
+      userId: user.userId,
+      name: user.name,
+      role: user.role,
+      balance: user.balance
+    }));
 
-    window.location.href = "index.html";
+    if (user.role === "admin") {
+      window.location.href = "index.html";
+    } else {
+      window.location.href = "index.html";
+    }
 
-  } catch (err) {
-    message.innerText = err.message;
+  } catch (error) {
+    message.innerText = "ERROR: " + error.message;
   }
 });
