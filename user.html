@@ -134,17 +134,71 @@ const m = d.data();
 matchList.innerHTML += `
 <div class="card">
 
-<h3>${m.homeTeam} vs ${m.awayTeam}</h3>
+<div style="text-align:center;font-size:22px;font-weight:bold;color:#00ff66;">
+🏆 ${m.league}
+</div>
 
-<p>${m.league}</p>
+<div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;">
 
-<p>⏰ ${m.matchTime}</p>
+<div style="color:#ff4444;font-size:22px;font-weight:bold;">
+🔴 ${m.homeTeam}
+</div>
 
-<p>Status : ${m.status}</p>
+<div style="font-size:20px;font-weight:bold;">
+VS
+</div>
+
+<div style="color:#4da6ff;font-size:22px;font-weight:bold;">
+🔵 ${m.awayTeam}
+</div>
+
+</div>
+
+<div style="text-align:center;margin:15px 0;">
+⏰ ${m.matchTime}
+</div>
+
+<div style="display:flex;justify-content:space-around;margin-top:20px;">
+
+<div>
+🏠<br>
+<b>${m.homeOdd}</b>
+</div>
+
+<div>
+🤝<br>
+<b>${m.drawOdd}</b>
+</div>
+
+<div>
+✈️<br>
+<b>${m.awayOdd}</b>
+</div>
+
+</div>
+
+<div style="display:flex;justify-content:space-around;margin-top:20px;">
+
+<div>
+⬆️ Over<br>
+<b>${m.overOdd}</b>
+</div>
+
+<div>
+⬇️ Under<br>
+<b>${m.underOdd}</b>
+</div>
+
+</div>
+
+<div style="text-align:center;margin-top:20px;">
+<span style="background:#00aa00;padding:8px 20px;border-radius:20px;">
+${m.status.toUpperCase()}
+</span>
+</div>
 
 </div>
 `;
-
 });
 
 }
@@ -193,6 +247,7 @@ window.logout = function () {
   localStorage.removeItem("m7User");
   location.href = "login.html";
 };
+  loadMatches();
 </script>
 
 </body>
