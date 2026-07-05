@@ -44,6 +44,33 @@ button{padding:12px;border:0;border-radius:8px;background:#00b300;color:white;fo
   <h3>Pending Withdraws</h3>
   <div id="withdrawList">Loading...</div>
 </div>
+  <div class="box">
+
+<h3>⚽ Add Match</h3>
+
+<input id="league" placeholder="League">
+
+<input id="homeTeam" placeholder="Home Team">
+
+<input id="awayTeam" placeholder="Away Team">
+
+<input id="matchTime" type="datetime-local">
+
+<input id="homeOdd" placeholder="Home Odd (-50)">
+
+<input id="drawOdd" placeholder="Draw Odd (+280)">
+
+<input id="awayOdd" placeholder="Away Odd (+100)">
+
+<input id="overOdd" placeholder="Over 2.5 (+95)">
+
+<input id="underOdd" placeholder="Under 2.5 (-105)">
+
+<button onclick="addMatch()">
+Create Match
+</button>
+
+</div>
 <div class="box">
   <h3>User List</h3>
   <div id="userList">Loading...</div>
@@ -51,8 +78,17 @@ button{padding:12px;border:0;border-radius:8px;background:#00b300;color:white;fo
 
 <script type="module">
 import {
-  db, doc, getDoc, setDoc, updateDoc,
-  collection, getDocs, query, where
+db,
+doc,
+getDoc,
+setDoc,
+updateDoc,
+collection,
+getDocs,
+query,
+where,
+addDoc,
+serverTimestamp
 } from "./js/firebase.js";
 
 const admin = JSON.parse(localStorage.getItem("m7User"));
@@ -262,6 +298,46 @@ window.toggleStatus = async function(userId, status){
 loadDeposits();
 loadWithdraws();
 loadUsers();
+  window.addMatch = async function(){
+
+const league = document.getElementById("league").value;
+const homeTeam = document.getElementById("homeTeam").value;
+const awayTeam = document.getElementById("awayTeam").value;
+const matchTime = document.getElementById("matchTime").value;
+
+const homeOdd = document.getElementById("homeOdd").value;
+const drawOdd = document.getElementById("drawOdd").value;
+const awayOdd = document.getElementById("awayOdd").value;
+const overOdd = document.getElementById("overOdd").value;
+const underOdd = document.getElementById("underOdd").value;
+
+if(!league || !homeTeam || !awayTeam || !matchTime){
+alert("Fill all fields");
+return;
+}
+
+await addDoc(collection(db,"matches"),{
+
+league,
+homeTeam,
+awayTeam,
+matchTime,
+
+homeOdd,
+drawOdd,
+awayOdd,
+overOdd,
+underOdd,
+
+status:"open",
+
+createdAt:serverTimestamp()
+
+});
+
+alert("Match Created");
+
+}
 </script>
 
 </body>
