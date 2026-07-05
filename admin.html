@@ -113,7 +113,55 @@ window.rejectDeposit = async function(depositId){
   await updateDoc(doc(db, "deposits", depositId), { status: "rejected" });
   loadDeposits();
 };
+async function loadWithdraws(){
+  const withdrawList = document.getElementById("withdrawList");
+  withdrawList.innerHTML = "";
 
+  const q = query(collection(db, "withdraws"), where("status", "==", "pending"));
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    withdrawList.innerHTML = "<p>No pending withdraws</p>";
+    return;
+  }
+
+  snap.forEach((d) => {
+    const w = d.data();
+    withdrawList.innerHTML += `
+      <div class="userCard">
+        <b>${w.name}</b><br>
+        User ID: ${w.userId}<br>
+        Amount: <span class="balance">${w.amount} W</span><br>
+        Status: ${w.status}<br>
+        <button onclick="approveWithdraw('${d.id}','${w.userId}',${w.amount})">Approve</button>
+        <button class="btnRed" onclick="rejectWithdraw('${d.id}')">Reject</button>
+      </div>
+    `;
+  });
+}
+
+window.approveWithdraw = async function(withdrawId, userId, amount){
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  const user = userSnap.data();
+
+  let newBalance = Number(user.balance || 0) - Number(amount);
+  if (newBalance < 0) {
+    alert("Balance မလောက်ပါ");
+    return;
+  }
+
+  await updateDoc(userRef, { balance: newBalance });
+  await updateDoc(doc(db, "withdraws", withdrawId), { status: "approved" });
+
+  loadWithdraws();
+  loadUsers();
+};
+
+window.rejectWithdraw = async function(withdrawId){
+  await updateDoc(doc(db, "withdraws", withdrawId), { status: "rejected" });
+  loadWithdraws();
+};
 async function loadUsers(){
   const userList = document.getElementById("userList");
   userList.innerHTML = "";
@@ -212,6 +260,7 @@ window.toggleStatus = async function(userId, status){
 };
 
 loadDeposits();
+loadWithdraws();
 loadUsers();
 </script>
 
