@@ -30,7 +30,7 @@ loginBtn.addEventListener("click", async () => {
       return;
     }
 
-    if (data.password !== password) {
+    if (user.password !== password) {
       message.innerText = "Password မှားနေပါတယ်";
       return;
     }
