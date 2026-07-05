@@ -37,12 +37,20 @@ button{padding:12px;border:0;border-radius:8px;background:#00b300;color:white;fo
 </div>
 
 <div class="box">
+  <h3>Pending Deposits</h3>
+  <div id="depositList">Loading...</div>
+</div>
+
+<div class="box">
   <h3>User List</h3>
   <div id="userList">Loading...</div>
 </div>
 
 <script type="module">
-import { db, doc, getDoc, setDoc, updateDoc, collection, getDocs } from "./js/firebase.js";
+import {
+  db, doc, getDoc, setDoc, updateDoc,
+  collection, getDocs, query, where
+} from "./js/firebase.js";
 
 const admin = JSON.parse(localStorage.getItem("m7User"));
 
@@ -55,7 +63,53 @@ document.getElementById("adminName").innerText = "Admin: " + admin.name;
 window.logout = function(){
   localStorage.removeItem("m7User");
   location.href = "login.html";
+};
+
+async function loadDeposits(){
+  const depositList = document.getElementById("depositList");
+  depositList.innerHTML = "";
+
+  const q = query(collection(db, "deposits"), where("status", "==", "pending"));
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    depositList.innerHTML = "<p>No pending deposits</p>";
+    return;
+  }
+
+  snap.forEach((d) => {
+    const dep = d.data();
+    depositList.innerHTML += `
+      <div class="userCard">
+        <b>${dep.name}</b><br>
+        User ID: ${dep.userId}<br>
+        Amount: <span class="balance">${dep.amount} W</span><br>
+        Status: ${dep.status}<br>
+        <button onclick="approveDeposit('${d.id}','${dep.userId}',${dep.amount})">Approve</button>
+        <button class="btnRed" onclick="rejectDeposit('${d.id}')">Reject</button>
+      </div>
+    `;
+  });
 }
+
+window.approveDeposit = async function(depositId, userId, amount){
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  const user = userSnap.data();
+
+  const newBalance = Number(user.balance || 0) + Number(amount);
+
+  await updateDoc(userRef, { balance: newBalance });
+  await updateDoc(doc(db, "deposits", depositId), { status: "approved" });
+
+  loadDeposits();
+  loadUsers();
+};
+
+window.rejectDeposit = async function(depositId){
+  await updateDoc(doc(db, "deposits", depositId), { status: "rejected" });
+  loadDeposits();
+};
 
 async function loadUsers(){
   const userList = document.getElementById("userList");
@@ -122,7 +176,7 @@ window.addUser = async function(){
   document.getElementById("newBalance").value = "";
 
   loadUsers();
-}
+};
 
 window.changeBalance = async function(userId, type){
   const input = document.getElementById("amount_" + userId);
@@ -144,7 +198,7 @@ window.changeBalance = async function(userId, type){
 
   input.value = "";
   loadUsers();
-}
+};
 
 window.toggleStatus = async function(userId, status){
   const ref = doc(db, "users", userId);
@@ -152,8 +206,9 @@ window.toggleStatus = async function(userId, status){
     status: status === "active" ? "blocked" : "active"
   });
   loadUsers();
-}
+};
 
+loadDeposits();
 loadUsers();
 </script>
 
