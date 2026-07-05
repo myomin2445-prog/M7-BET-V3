@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7 BET Admin</title>
+<style>
+body{margin:0;background:#111;color:white;font-family:Arial}
+.header{background:#00b300;padding:15px;text-align:center;font-size:24px;font-weight:bold}
+.box{width:92%;max-width:700px;margin:20px auto;background:#1f1f1f;padding:15px;border-radius:12px}
+.userCard{background:#2a2a2a;margin:12px 0;padding:15px;border-radius:10px}
+.balance{color:#00ff66;font-size:24px;font-weight:bold}
+input{width:100%;padding:12px;margin:8px 0;border:0;border-radius:8px;background:#333;color:white;font-size:16px;box-sizing:border-box}
+button{padding:12px;border:0;border-radius:8px;background:#00b300;color:white;font-weight:bold;margin:4px}
+.btnRed{background:#c40000}
+.btnGray{background:#555}
+</style>
+</head>
+<body>
+
+<div class="header">⚽ M7 BET ADMIN</div>
+
+<div class="box">
+  <h3>Admin Panel</h3>
+  <p id="adminName"></p>
+  <button class="btnRed" onclick="logout()">Logout</button>
+</div>
+
+<div class="box">
+  <h3>Add New User</h3>
+  <input id="newUserId" placeholder="User ID eg. M70002">
+  <input id="newName" placeholder="Name">
+  <input id="newPassword" placeholder="Password">
+  <input id="newBalance" type="number" placeholder="Balance W">
+  <button onclick="addUser()">Add User</button>
+  <p id="addMsg" style="color:#00ff66"></p>
+</div>
+
+<div class="box">
+  <h3>User List</h3>
+  <div id="userList">Loading...</div>
+</div>
+
+<script type="module">
+import { db, doc, getDoc, setDoc, updateDoc, collection, getDocs } from "./js/firebase.js";
+
+const admin = JSON.parse(localStorage.getItem("m7User"));
+
+if (!admin || admin.role !== "admin") {
+  location.href = "login.html";
+}
+
+document.getElementById("adminName").innerText = "Admin: " + admin.name;
+
+window.logout = function(){
+  localStorage.removeItem("m7User");
+  location.href = "login.html";
+}
+
+async function loadUsers(){
+  const userList = document.getElementById("userList");
+  userList.innerHTML = "";
+
+  const snap = await getDocs(collection(db, "users"));
+
+  snap.forEach((d) => {
+    const u = d.data();
+    if (u.role === "admin") return;
+
+    userList.innerHTML += `
+      <div class="userCard">
+        <b>${u.name}</b><br>
+        User ID: ${u.userId}<br>
+        Status: ${u.status}<br>
+        <div class="balance">${u.balance || 0} W</div>
+
+        <input id="amount_${u.userId}" type="number" placeholder="Amount W">
+
+        <button onclick="changeBalance('${u.userId}', 1)">+ Add</button>
+        <button class="btnRed" onclick="changeBalance('${u.userId}', -1)">- Cut</button>
+        <button class="btnGray" onclick="toggleStatus('${u.userId}', '${u.status}')">
+          ${u.status === "active" ? "Ban" : "Active"}
+        </button>
+      </div>
+    `;
+  });
+}
+
+window.addUser = async function(){
+  const userId = document.getElementById("newUserId").value.trim();
+  const name = document.getElementById("newName").value.trim();
+  const password = document.getElementById("newPassword").value.trim();
+  const balance = Number(document.getElementById("newBalance").value || 0);
+  const msg = document.getElementById("addMsg");
+
+  if (!userId || !name || !password) {
+    msg.innerText = "User ID, Name, Password ထည့်ပါ";
+    return;
+  }
+
+  const ref = doc(db, "users", userId);
+  const old = await getDoc(ref);
+
+  if (old.exists()) {
+    msg.innerText = "ဒီ User ID ရှိပြီးသားပါ";
+    return;
+  }
+
+  await setDoc(ref, {
+    userId,
+    name,
+    password,
+    balance,
+    role: "user",
+    status: "active"
+  });
+
+  msg.innerText = "User အသစ်ထည့်ပြီးပါပြီ";
+  document.getElementById("newUserId").value = "";
+  document.getElementById("newName").value = "";
+  document.getElementById("newPassword").value = "";
+  document.getElementById("newBalance").value = "";
+
+  loadUsers();
+}
+
+window.changeBalance = async function(userId, type){
+  const input = document.getElementById("amount_" + userId);
+  const amount = Number(input.value);
+
+  if (!amount || amount <= 0) {
+    alert("Amount ထည့်ပါ");
+    return;
+  }
+
+  const ref = doc(db, "users", userId);
+  const snap = await getDoc(ref);
+  const user = snap.data();
+
+  let newBalance = Number(user.balance || 0) + (amount * type);
+  if (newBalance < 0) newBalance = 0;
+
+  await updateDoc(ref, { balance: newBalance });
+
+  input.value = "";
+  loadUsers();
+}
+
+window.toggleStatus = async function(userId, status){
+  const ref = doc(db, "users", userId);
+  await updateDoc(ref, {
+    status: status === "active" ? "blocked" : "active"
+  });
+  loadUsers();
+}
+
+loadUsers();
+</script>
+
+</body>
+</html>
