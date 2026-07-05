@@ -303,10 +303,38 @@ window.toggleStatus = async function(userId, status){
   });
   loadUsers();
 };
+async function loadMatches(){
 
+const matchList = document.getElementById("matchList");
+matchList.innerHTML = "";
+
+const snap = await getDocs(collection(db,"matches"));
+
+snap.forEach((d)=>{
+
+const m = d.data();
+
+matchList.innerHTML += `
+<div class="userCard">
+
+<b>${m.homeTeam} vs ${m.awayTeam}</b><br>
+
+League: ${m.league}<br>
+
+Time: ${m.matchTime}<br>
+
+Status: ${m.status}
+
+</div>
+`;
+
+});
+
+}
 loadDeposits();
 loadWithdraws();
 loadUsers();
+  loadMatches();
   window.addMatch = async function(){
 
 const league = document.getElementById("league").value;
@@ -345,7 +373,7 @@ createdAt:serverTimestamp()
 });
 
 alert("Match Created");
-
+loadMatches();
 }
 </script>
 
