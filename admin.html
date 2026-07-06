@@ -325,7 +325,7 @@ snap.forEach((d)=>{
 
 const b=d.data();
 
-if(b.status!="pending") return;
+if(String(b.status).trim() !== "pending") return;
 
 betList.innerHTML += `
 <div class="userCard">
@@ -382,7 +382,7 @@ loadDeposits();
 loadWithdraws();
 loadUsers();
   loadMatches();
-  loadbets();
+  loadBets();
   window.betLose = async function(betId){
 
     await updateDoc(doc(db,"bets",betId),{
