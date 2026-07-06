@@ -195,6 +195,29 @@ VS
 <span style="background:#00aa00;padding:8px 20px;border-radius:20px;">
 ${m.status.toUpperCase()}
 </span>
+<div style="margin-top:20px;">
+  <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
+
+  <button onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd}')">
+    🔴 Home
+  </button>
+
+  <button onclick="placeBet('${d.id}','draw','Draw','${m.drawOdd}')">
+    🤝 Draw
+  </button>
+
+  <button onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd}')">
+    🔵 Away
+  </button>
+
+  <button onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd}')">
+    ⬆️ Over
+  </button>
+
+  <button onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd}')">
+    ⬇️ Under
+  </button>
+</div>
 </div>
 
 </div>
@@ -246,6 +269,41 @@ window.logout = function () {
   localStorage.removeItem("m7User");
   location.href = "login.html";
 };
+  window.placeBet = async function(matchId,type,team,odd){
+
+const amount = Number(document.getElementById("stake_"+matchId).value);
+
+if(!amount || amount<=0){
+alert("လောင်းငွေထည့်ပါ");
+return;
+}
+
+if(amount > Number(user.balance)){
+alert("လက်ကျန်ငွေမလုံလောက်ပါ");
+return;
+}
+
+await addDoc(collection(db,"bets"),{
+
+matchId:matchId,
+userId:user.userId,
+name:user.name,
+
+betType:type,
+team:team,
+odd:odd,
+
+amount:amount,
+
+status:"pending",
+
+createdAt:serverTimestamp()
+
+});
+
+alert("လောင်းထားပြီးပါပြီ");
+
+}
   loadMatches();
 </script>
 
