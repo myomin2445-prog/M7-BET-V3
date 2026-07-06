@@ -42,6 +42,12 @@ button{padding:12px;border:0;border-radius:8px;background:#00b300;color:white;fo
 </div>
 <div class="box">
   <h3>Pending Withdraws</h3>
+  <div class="box">
+    <h3>🎯 Pending Bets</h3>
+    <div id="betList">
+        Loading...
+    </div>
+</div>
   <div id="withdrawList">Loading...</div>
 </div>
   <div class="box">
@@ -303,6 +309,47 @@ window.toggleStatus = async function(userId, status){
   });
   loadUsers();
 };
+ async function loadBets(){
+
+const betList = document.getElementById("betList");
+betList.innerHTML="";
+
+const snap = await getDocs(collection(db,"bets"));
+
+if(snap.empty){
+betList.innerHTML="<p>No Bets</p>";
+return;
+}
+
+snap.forEach((d)=>{
+
+const b=d.data();
+
+if(b.status!="pending") return;
+
+betList.innerHTML += `
+<div class="userCard">
+
+<b>${b.name}</b><br>
+
+User : ${b.userId}<br>
+
+Bet : ${b.team}<br>
+
+Odd : ${b.odd}<br>
+
+Amount : ${b.amount} W<br>
+
+<button onclick="betWin('${d.id}')">✅ Win</button>
+
+<button class="btnRed" onclick="betLose('${d.id}')">❌ Lose</button>
+
+</div>
+`;
+
+});
+
+} 
 async function loadMatches(){
 
 const matchList = document.getElementById("matchList");
@@ -335,6 +382,41 @@ loadDeposits();
 loadWithdraws();
 loadUsers();
   loadMatches();
+  loadbets();
+  window.betLose = async function(betId){
+
+    await updateDoc(doc(db,"bets",betId),{
+        status:"lose"
+    });
+
+    loadBets();
+}
+
+window.betWin = async function(betId){
+
+    const betRef = doc(db,"bets",betId);
+    const betSnap = await getDoc(betRef);
+    const bet = betSnap.data();
+
+    const userRef = doc(db,"users",bet.userId);
+    const userSnap = await getDoc(userRef);
+    const user = userSnap.data();
+
+    const odd = Number(String(bet.odd).replace("+",""));
+
+    const winAmount = bet.amount + (bet.amount * odd / 100);
+
+    await updateDoc(userRef,{
+        balance:Number(user.balance)+winAmount
+    });
+
+    await updateDoc(betRef,{
+        status:"win"
+    });
+
+    loadUsers();
+    loadBets();
+}
   window.addMatch = async function(){
 
 const league = document.getElementById("league").value;
