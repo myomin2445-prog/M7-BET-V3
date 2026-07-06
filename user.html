@@ -105,13 +105,13 @@ Loading...
 <script type="module">
 import {
   db,
+  doc,
+  updateDoc,
   addDoc,
   collection,
   getDocs,
   serverTimestamp
-} from "./js/firebase.js";
-
-const user = JSON.parse(localStorage.getItem("m7User"));
+} from "./js/firebase.js"; user = JSON.parse(localStorage.getItem("m7User"));
 
 if (!user) {
   location.href = "login.html";
