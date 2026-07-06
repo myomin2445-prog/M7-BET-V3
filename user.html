@@ -282,7 +282,11 @@ if(amount > Number(user.balance)){
 alert("လက်ကျန်ငွေမလုံလောက်ပါ");
 return;
 }
+const userRef = doc(db,"users",user.userId);
 
+await updateDoc(userRef,{
+  balance: Number(user.balance) - amount
+});
 await addDoc(collection(db,"bets"),{
 
 matchId:matchId,
