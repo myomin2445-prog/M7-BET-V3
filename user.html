@@ -219,6 +219,7 @@ window.placeBet = async function(matchId,type,team,odd){
   });
 
   alert("လောင်းထားပြီးပါပြီ");
+  loadHistory();
   document.getElementById("stake_"+matchId).value = "";
 }
 async function loadHistory(){
@@ -257,7 +258,7 @@ window.logout = function(){
 }
 
 loadMatches();
-  loadMatches();
+  loadHistory();
 </script>
 
 </body>
