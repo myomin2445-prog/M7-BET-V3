@@ -287,6 +287,9 @@ const userRef = doc(db,"users",user.userId);
 await updateDoc(userRef,{
   balance: Number(user.balance) - amount
 });
+    user.balance = Number(user.balance) - amount;
+localStorage.setItem("m7User", JSON.stringify(user));
+document.getElementById("balance").innerHTML = "₩ " + user.balance;
 await addDoc(collection(db,"bets"),{
 
 matchId:matchId,
