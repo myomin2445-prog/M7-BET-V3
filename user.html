@@ -6,102 +6,51 @@
 <title>M7 BET - User</title>
 
 <style>
-body{
-margin:0;
-background:#111;
-font-family:Arial;
-color:white;
-}
-
-.header{
-background:#00b300;
-padding:15px;
-text-align:center;
-font-size:24px;
-font-weight:bold;
-}
-
-.card{
-width:90%;
-max-width:400px;
-margin:30px auto;
-background:#222;
-padding:20px;
-border-radius:15px;
-text-align:center;
-}
-
-.balance{
-font-size:35px;
-color:#00ff66;
-margin:20px 0;
-}
-
-button{
-width:100%;
-padding:15px;
-background:#00b300;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-margin-top:10px;
-}
+body{margin:0;background:#111;color:white;font-family:Arial}
+.header{background:#008000;padding:20px;text-align:center;font-size:28px;font-weight:bold}
+.card{width:90%;max-width:600px;margin:25px auto;background:#222;padding:20px;border-radius:15px;text-align:center}
+.balance{font-size:38px;color:#00ff66;margin:20px 0}
+input{width:70%;padding:12px;margin:10px;border-radius:6px;background:#333;color:white;border:1px solid #777}
+button{width:90%;padding:15px;margin:8px;background:#00b300;color:white;border:0;border-radius:10px;font-size:18px;font-weight:bold}
+.smallBtn{width:auto;padding:10px 18px;font-size:15px}
+.red{color:#ff4444;font-weight:bold}
+.blue{color:#4da6ff;font-weight:bold}
+.green{color:#00ff66;font-weight:bold}
+.badge{background:#00aa00;padding:8px 18px;border-radius:20px}
 </style>
-
 </head>
 
 <body>
 
-<div class="header">
-⚽ M7 BET
+<div class="header">⚽ M7 BET</div>
+
+<div class="card">
+  <h2 id="name"></h2>
+  <p>User ID</p>
+  <h3 id="userid"></h3>
+  <div class="balance" id="balance"></div>
+  <button onclick="logout()">Logout</button>
 </div>
 
 <div class="card">
-
-<h2 id="name"></h2>
-
-<p>User ID</p>
-
-<h3 id="userid"></h3>
-
-<div class="balance" id="balance"></div>
-
-<button onclick="logout()">
-Logout
-</button>
-
+  <h2>Deposit</h2>
+  <input type="number" id="depositAmount" placeholder="Amount W">
+  <button onclick="depositRequest()">Deposit Request</button>
+  <p id="msg"></p>
 </div>
+
 <div class="card">
-
-<h2>Deposit</h2>
-
-<input type="number" id="depositAmount" placeholder="Amount W">
-
-<button onclick="depositRequest()">Deposit Request</button>
-
-<p id="msg"></p>
-
-</div>
-  <div class="card">
-<h2>Withdraw</h2>
-
-<input type="number" id="withdrawAmount" placeholder="Amount W">
-
-<button onclick="withdrawRequest()">Withdraw Request</button>
-
-<p id="withdrawMsg"></p>
-
-</div>
-  <div class="card">
-
-<h2>⚽ Today's Matches</h2>
-
-<div id="matchList">
-Loading...
+  <h2>Withdraw</h2>
+  <input type="number" id="withdrawAmount" placeholder="Amount W">
+  <button onclick="withdrawRequest()">Withdraw Request</button>
+  <p id="withdrawMsg"></p>
 </div>
 
+<div class="card">
+  <h2>⚽ Today's Matches</h2>
+  <div id="matchList">Loading...</div>
 </div>
+
 <script type="module">
 import {
   db,
@@ -111,7 +60,9 @@ import {
   collection,
   getDocs,
   serverTimestamp
-} from "./js/firebase.js"; user = JSON.parse(localStorage.getItem("m7User"));
+} from "./js/firebase.js";
+
+const user = JSON.parse(localStorage.getItem("m7User"));
 
 if (!user) {
   location.href = "login.html";
@@ -119,199 +70,157 @@ if (!user) {
 
 document.getElementById("name").innerHTML = user.name;
 document.getElementById("userid").innerHTML = user.userId;
-document.getElementById("balance").innerHTML = "₩ " + user.balance;
+document.getElementById("balance").innerHTML = Number(user.balance || 0) + " W";
+
 async function loadMatches(){
 
-const matchList = document.getElementById("matchList");
-matchList.innerHTML = "";
+  const matchList = document.getElementById("matchList");
+  matchList.innerHTML = "";
 
-const snap = await getDocs(collection(db,"matches"));
+  const snap = await getDocs(collection(db,"matches"));
 
-snap.forEach((d)=>{
+  if(snap.empty){
+    matchList.innerHTML = "No Matches";
+    return;
+  }
 
-const m = d.data();
+  snap.forEach((d)=>{
 
-matchList.innerHTML += `
-<div class="card">
+    const m = d.data();
 
-<div style="text-align:center;font-size:22px;font-weight:bold;color:#00ff66;">
-🏆 ${m.league}
-</div>
+    matchList.innerHTML += `
+    <div class="card">
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;">
+      <h3 class="green">🏆 ${m.league}</h3>
 
-<div style="color:#ff4444;font-size:22px;font-weight:bold;">
-🔴 ${m.homeTeam}
-</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;">
+        <div class="red">🔴 ${m.homeTeam}</div>
+        <div><b>VS</b></div>
+        <div class="blue">🔵 ${m.awayTeam}</div>
+      </div>
 
-<div style="font-size:20px;font-weight:bold;">
-VS
-</div>
+      <p>⏰ ${m.matchTime}</p>
 
-<div style="color:#4da6ff;font-size:22px;font-weight:bold;">
-🔵 ${m.awayTeam}
-</div>
+      <div style="display:flex;justify-content:space-around;margin:15px 0;">
+        <div>🏠<br><b>${m.homeOdd || "-"}</b></div>
+        <div>🤝<br><b>${m.drawOdd || "-"}</b></div>
+        <div>✈️<br><b>${m.awayOdd || "-"}</b></div>
+      </div>
 
-</div>
+      <div style="display:flex;justify-content:space-around;margin:15px 0;">
+        <div>⬆️ Over<br><b>${m.overOdd || "-"}</b></div>
+        <div>⬇️ Under<br><b>${m.underOdd || "-"}</b></div>
+      </div>
 
-<div style="text-align:center;margin:15px 0;">
-⏰ ${m.matchTime}
-</div>
+      <p><span class="badge">${String(m.status || "open").toUpperCase()}</span></p>
 
-<div style="display:flex;justify-content:space-around;margin-top:20px;">
+      <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
 
-<div>
-🏠<br>
-<b>${m.homeOdd}</b>
-</div>
+      <button class="smallBtn" onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd || ""}')">🔴 Home</button>
+      <button class="smallBtn" onclick="placeBet('${d.id}','draw','Draw','${m.drawOdd || ""}')">🤝 Draw</button>
+      <button class="smallBtn" onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd || ""}')">🔵 Away</button>
+      <button class="smallBtn" onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd || ""}')">⬆️ Over</button>
+      <button class="smallBtn" onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd || ""}')">⬇️ Under</button>
 
-<div>
-🤝<br>
-<b>${m.drawOdd}</b>
-</div>
-
-<div>
-✈️<br>
-<b>${m.awayOdd}</b>
-</div>
-
-</div>
-
-<div style="display:flex;justify-content:space-around;margin-top:20px;">
-
-<div>
-⬆️ Over<br>
-<b>${m.overOdd}</b>
-</div>
-
-<div>
-⬇️ Under<br>
-<b>${m.underOdd}</b>
-</div>
-
-</div>
-
-<div style="text-align:center;margin-top:20px;">
-<span style="background:#00aa00;padding:8px 20px;border-radius:20px;">
-${m.status.toUpperCase()}
-</span>
-<div style="margin-top:20px;">
-  <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
-
-  <button onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd}')">
-    🔴 Home
-  </button>
-
-  <button onclick="placeBet('${d.id}','draw','Draw','${m.drawOdd}')">
-    🤝 Draw
-  </button>
-
-  <button onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd}')">
-    🔵 Away
-  </button>
-
-  <button onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd}')">
-    ⬆️ Over
-  </button>
-
-  <button onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd}')">
-    ⬇️ Under
-  </button>
-</div>
-</div>
-
-</div>
-`;
-});
-
+    </div>
+    `;
+  });
 }
-window.depositRequest = async function () {
-  const amount = document.getElementById("depositAmount").value;
 
-  if (!amount) {
+window.depositRequest = async function(){
+
+  const amount = Number(document.getElementById("depositAmount").value);
+
+  if(!amount || amount <= 0){
     document.getElementById("msg").innerHTML = "Enter Amount";
     return;
   }
 
-  await addDoc(collection(db, "deposits"), {
-    userId: user.userId,
-    name: user.name,
-    amount: Number(amount),
-    status: "pending",
-    createdAt: serverTimestamp()
+  await addDoc(collection(db,"deposits"),{
+    userId:user.userId,
+    name:user.name,
+    amount:amount,
+    status:"pending",
+    createdAt:serverTimestamp()
   });
 
   document.getElementById("msg").innerHTML = "Deposit Request Sent";
   document.getElementById("depositAmount").value = "";
-};
-window.withdrawRequest = async function () {
+}
 
-  const amount = document.getElementById("withdrawAmount").value;
+window.withdrawRequest = async function(){
 
-  if (!amount) {
+  const amount = Number(document.getElementById("withdrawAmount").value);
+
+  if(!amount || amount <= 0){
     document.getElementById("withdrawMsg").innerHTML = "Enter Amount";
     return;
   }
 
-  await addDoc(collection(db, "withdraws"), {
-    userId: user.userId,
-    name: user.name,
-    amount: Number(amount),
-    status: "pending",
-    createdAt: serverTimestamp()
+  if(amount > Number(user.balance || 0)){
+    document.getElementById("withdrawMsg").innerHTML = "Balance မလောက်ပါ";
+    return;
+  }
+
+  await addDoc(collection(db,"withdraws"),{
+    userId:user.userId,
+    name:user.name,
+    amount:amount,
+    status:"pending",
+    createdAt:serverTimestamp()
   });
 
   document.getElementById("withdrawMsg").innerHTML = "Withdraw Request Sent";
   document.getElementById("withdrawAmount").value = "";
+}
 
-};
-window.logout = function () {
+window.placeBet = async function(matchId,type,team,odd){
+
+  const amount = Number(document.getElementById("stake_"+matchId).value);
+
+  if(!amount || amount <= 0){
+    alert("လောင်းငွေထည့်ပါ");
+    return;
+  }
+
+  if(amount > Number(user.balance || 0)){
+    alert("လက်ကျန်ငွေမလုံလောက်ပါ");
+    return;
+  }
+
+  const userRef = doc(db,"users",user.userId);
+  const newBalance = Number(user.balance || 0) - amount;
+
+  await updateDoc(userRef,{
+    balance:newBalance
+  });
+
+  user.balance = newBalance;
+  localStorage.setItem("m7User", JSON.stringify(user));
+  document.getElementById("balance").innerHTML = newBalance + " W";
+
+  await addDoc(collection(db,"bets"),{
+    matchId:matchId,
+    userId:user.userId,
+    name:user.name,
+    betType:type,
+    team:team,
+    odd:odd,
+    amount:amount,
+    status:"pending",
+    createdAt:serverTimestamp()
+  });
+
+  alert("လောင်းထားပြီးပါပြီ");
+  document.getElementById("stake_"+matchId).value = "";
+}
+
+window.logout = function(){
   localStorage.removeItem("m7User");
   location.href = "login.html";
-};
-  window.placeBet = async function(matchId,type,team,odd){
-
-const amount = Number(document.getElementById("stake_"+matchId).value);
-
-if(!amount || amount<=0){
-alert("လောင်းငွေထည့်ပါ");
-return;
 }
 
-if(amount > Number(user.balance)){
-alert("လက်ကျန်ငွေမလုံလောက်ပါ");
-return;
-}
-const userRef = doc(db,"users",user.userId);
-
-await updateDoc(userRef,{
-  balance: Number(user.balance) - amount
-});
-    user.balance = Number(user.balance) - amount;
-localStorage.setItem("m7User", JSON.stringify(user));
-document.getElementById("balance").innerHTML = "₩ " + user.balance;
-await addDoc(collection(db,"bets"),{
-
-matchId:matchId,
-userId:user.userId,
-name:user.name,
-
-betType:type,
-team:team,
-odd:odd,
-
-amount:amount,
-
-status:"pending",
-
-createdAt:serverTimestamp()
-
-});
-
-alert("လောင်းထားပြီးပါပြီ");
-
-}
-  loadMatches();
+loadMatches();
 </script>
 
 </body>
