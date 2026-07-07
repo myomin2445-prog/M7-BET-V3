@@ -87,7 +87,10 @@ async function loadMatches(){
   snap.forEach((d)=>{
 
     const m = d.data();
-
+const now = new Date();
+const matchTime = new Date(m.matchTime);
+const isClosed = now >= matchTime;
+const statusText = isClosed ? "CLOSED" : (m.status || "OPEN");
     matchList.innerHTML += `
     <div class="card">
 
@@ -111,9 +114,8 @@ async function loadMatches(){
         <div>⬆️ Over<br><b>${m.overOdd || "-"}</b></div>
         <div>⬇️ Under<br><b>${m.underOdd || "-"}</b></div>
       </div>
-
-      <p><span class="badge">${String(m.status || "open").toUpperCase()}</span></p>
-
+<p><span class="badge">${statusText}</span></p>
+${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပိတ်ထားပါပြီ</p>" : `
       <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
 
       <button class="smallBtn" onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd || ""}')">🔴 Home</button>
@@ -121,7 +123,7 @@ async function loadMatches(){
       <button class="smallBtn" onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd || ""}')">🔵 Away</button>
       <button class="smallBtn" onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd || ""}')">⬆️ Over</button>
       <button class="smallBtn" onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd || ""}')">⬇️ Under</button>
-
+`}
     </div>
     `;
   });
