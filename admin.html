@@ -493,15 +493,17 @@ async function loadBets(){
 
         <input id="win_${d.id}" type="number" placeholder="Win Amount W">
 
-        <button onclick="betWin('${d.id}','${b.userId}')">✅ Win</button>
-        <button class="btnRed" onclick="betLose('${d.id}')">❌ Lose</button>
+        <button onclick="betWin('${d.id}','${b.userId}','win')">✅ Win</button>
+<button class="btnBlue" onclick="betWin('${d.id}','${b.userId}','halfwin')">🟡 Half Win</button>
+<button class="btnGray" onclick="betWin('${d.id}','${b.userId}','halflose')">🟠 Half Lose</button>
+<button class="btnRed" onclick="betLose('${d.id}')">❌ Lose</button>
       </div>
     `;
   });
 }
 
 
-window.betWin = async function(betId,userId){
+window.betWin = async function(betId, userId, resultType){
 
   const winAmount = Number(document.getElementById("win_"+betId).value || 0);
 
@@ -519,9 +521,9 @@ window.betWin = async function(betId,userId){
   });
 
   await updateDoc(doc(db,"bets",betId),{
-    status:"win",
-    winAmount:winAmount
-  });
+    status: resultType,
+    winAmount: winAmount
+});
 
   loadBets();
   loadUsers();
