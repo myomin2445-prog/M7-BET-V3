@@ -6,43 +6,16 @@
 <title>M7 BET - User</title>
 
 <style>
-body{margin:0;background:#111;color:white;font-family:Arial}
-.header{
-    background:linear-gradient(135deg,#00a000,#007400);
-    padding:28px 20px;
-    text-align:center;
-    box-shadow:0 4px 20px rgba(0,255,0,.35);
-    border-bottom-left-radius:18px;
-    border-bottom-right-radius:18px;
-}
-.balance{
-font-size:34px;
-color:#00ff66;
-margin:14px 0;
-font-weight:bold;
-}
-input{
-width:85%;
-padding:14px;
-margin:10px 0;
-border-radius:10px;
-background:#2f2f2f;
-color:white;
-border:1px solid #555;
-}
-button{
-width:85%;
-padding:16px;
-margin:10px 0;
-background:#00b300;
-color:white;
-border:0;
-border-radius:12px;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-transition:.2s;
-}
+body{margin:0;background:#0b0b0b;color:white;font-family:Arial}
+.header{background:linear-gradient(135deg,#00a000,#007400);padding:28px 20px;text-align:center;box-shadow:0 4px 20px rgba(0,255,0,.35)}
+.card{width:88%;max-width:520px;margin:18px auto;background:linear-gradient(180deg,#242424,#1b1b1b);padding:22px;border-radius:18px;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.35)}
+.balance{font-size:34px;color:#00ff66;margin:14px 0;font-weight:bold}
+.menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:88%;max-width:520px;margin:20px auto}
+.menuBtn{background:#eaf5f0;color:#111;border-radius:16px;padding:28px 10px;text-align:center;font-size:18px;font-weight:bold;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.menuIcon{font-size:42px;margin-bottom:8px}
+.section{display:none}
+input{width:85%;padding:14px;margin:10px 0;border-radius:10px;background:#2f2f2f;color:white;border:1px solid #555}
+button{width:85%;padding:16px;margin:10px 0;background:#00b300;color:white;border:0;border-radius:12px;font-size:18px;font-weight:bold}
 .smallBtn{width:auto;padding:10px 18px;font-size:15px}
 .red{color:#ff4444;font-weight:bold}
 .blue{color:#4da6ff;font-weight:bold}
@@ -54,47 +27,39 @@ transition:.2s;
 <body>
 
 <div class="header">
-
-    <div style="font-size:34px;">⚽</div>
-
-    <div style="font-size:32px;font-weight:bold;">
-        M7 BET
-    </div>
-
-    <div style="font-size:14px;color:#d9ffd9;margin-top:6px;">
-        Football Betting Platform
-    </div>
-
+  <div style="font-size:34px;">⚽</div>
+  <div style="font-size:32px;font-weight:bold;">M7 BET</div>
+  <div style="font-size:14px;color:#d9ffd9;margin-top:6px;">Football Betting Platform</div>
 </div>
 
 <div class="card">
+  <div style="font-size:60px;">👤</div>
+  <h2 id="name"></h2>
+  <p>User ID</p>
+  <h3 id="userid"></h3>
+  <div class="balance" id="balance"></div>
+</div>
 
-    <div style="font-size:70px;">👤</div>
-
-    <h2 id="name"></h2>
-
-    <div style="color:#bbb;margin-top:8px;">
-        User ID
-    </div>
-
-    <h3 id="userid"></h3>
-
-    <div class="balance" id="balance"></div>
-
-    <div style="
-        margin:15px auto;
-        width:90%;
-        height:1px;
-        background:#444;
-    "></div>
-
-    <button onclick="logout()">
-        🚪 Logout
-    </button>
-
+<div class="menuGrid">
+  <div class="menuBtn" onclick="showSection('betSection')">
+    <div class="menuIcon">⚽</div>Bet
+  </div>
+  <div class="menuBtn" onclick="showSection('historySection')">
+    <div class="menuIcon">📜</div>Bet History
+  </div>
+  <div class="menuBtn" onclick="showSection('depositSection')">
+    <div class="menuIcon">💳</div>Deposit
+  </div>
+  <div class="menuBtn" onclick="showSection('withdrawSection')">
+    <div class="menuIcon">🏧</div>Withdraw
+  </div>
 </div>
 
 <div class="card">
+  <button onclick="logout()">🚪 Logout</button>
+</div>
+
+<div id="depositSection" class="section card">
   <div style="font-size:45px;">💳</div>
   <h2>Deposit</h2>
   <input type="number" id="depositAmount" placeholder="Amount W">
@@ -102,7 +67,7 @@ transition:.2s;
   <p id="msg"></p>
 </div>
 
-<div class="card">
+<div id="withdrawSection" class="section card">
   <div style="font-size:45px;">🏧</div>
   <h2>Withdraw</h2>
   <input type="number" id="withdrawAmount" placeholder="Amount W">
@@ -110,14 +75,16 @@ transition:.2s;
   <p id="withdrawMsg"></p>
 </div>
 
-<div class="card">
+<div id="betSection" class="section card">
   <h2>⚽ Today's Matches</h2>
   <div id="matchList">Loading...</div>
 </div>
-<div class="card">
+
+<div id="historySection" class="section card">
   <h2>📜 Bet History</h2>
   <div id="historyList">Loading...</div>
 </div>
+
 <script type="module">
 import {
   db,
@@ -127,7 +94,7 @@ import {
   collection,
   getDocs,
   query,
-where,
+  where,
   serverTimestamp
 } from "./js/firebase.js";
 
@@ -140,6 +107,11 @@ if (!user) {
 document.getElementById("name").innerHTML = user.name;
 document.getElementById("userid").innerHTML = user.userId;
 document.getElementById("balance").innerHTML = Number(user.balance || 0) + " W";
+
+window.showSection = function(id){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+};
 
 async function loadMatches(){
 
@@ -156,10 +128,12 @@ async function loadMatches(){
   snap.forEach((d)=>{
 
     const m = d.data();
-const now = new Date();
-const matchTime = new Date(m.matchTime);
-const isClosed = now >= matchTime;
-const statusText = isClosed ? "CLOSED" : (m.status || "OPEN");
+
+    const now = new Date();
+    const matchTime = new Date(m.matchTime);
+    const isClosed = now >= matchTime;
+    const statusText = isClosed ? "CLOSED" : (m.status || "OPEN");
+
     matchList.innerHTML += `
     <div class="card">
 
@@ -183,8 +157,11 @@ const statusText = isClosed ? "CLOSED" : (m.status || "OPEN");
         <div>⬆️ Over<br><b>${m.overOdd || "-"}</b></div>
         <div>⬇️ Under<br><b>${m.underOdd || "-"}</b></div>
       </div>
-<p><span class="badge">${statusText}</span></p>
-${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပိတ်ထားပါပြီ</p>" : `
+
+      <p><span class="badge">${statusText}</span></p>
+
+      ${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပိတ်ထားပါပြီ</p>" : `
+
       <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
 
       <button class="smallBtn" onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd || ""}')">🔴 Home</button>
@@ -192,7 +169,9 @@ ${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပ�
       <button class="smallBtn" onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd || ""}')">🔵 Away</button>
       <button class="smallBtn" onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd || ""}')">⬆️ Over</button>
       <button class="smallBtn" onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd || ""}')">⬇️ Under</button>
-`}
+
+      `}
+
     </div>
     `;
   });
@@ -217,7 +196,7 @@ window.depositRequest = async function(){
 
   document.getElementById("msg").innerHTML = "Deposit Request Sent";
   document.getElementById("depositAmount").value = "";
-}
+};
 
 window.withdrawRequest = async function(){
 
@@ -243,7 +222,7 @@ window.withdrawRequest = async function(){
 
   document.getElementById("withdrawMsg").innerHTML = "Withdraw Request Sent";
   document.getElementById("withdrawAmount").value = "";
-}
+};
 
 window.placeBet = async function(matchId,type,team,odd){
 
@@ -285,7 +264,8 @@ window.placeBet = async function(matchId,type,team,odd){
   alert("လောင်းထားပြီးပါပြီ");
   loadHistory();
   document.getElementById("stake_"+matchId).value = "";
-}
+};
+
 async function loadHistory(){
 
   const historyList = document.getElementById("historyList");
@@ -309,20 +289,23 @@ async function loadHistory(){
     historyList.innerHTML += `
       <div class="card">
         <b>${b.team}</b><br>
-        ${b.amount} W<br>
-        ${b.status.toUpperCase()}
+        Amount: ${b.amount} W<br>
+        Odd: ${b.odd || "-"}<br>
+        Status: <b>${String(b.status).toUpperCase()}</b><br>
+        Win Amount: ${b.winAmount || 0} W
       </div>
     `;
   });
-
 }
+
 window.logout = function(){
   localStorage.removeItem("m7User");
   location.href = "login.html";
-}
+};
 
 loadMatches();
-  loadHistory();
+loadHistory();
+
 </script>
 
 </body>
