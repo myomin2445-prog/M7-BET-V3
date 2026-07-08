@@ -7,15 +7,13 @@
 
 <style>
 body{margin:0;background:#111;color:white;font-family:Arial}
-.header{background:#008000;padding:20px;text-align:center;font-size:28px;font-weight:bold}
-.card{
-width:88%;
-max-width:520px;
-margin:18px auto;
-background:linear-gradient(180deg,#242424,#1b1b1b);
-padding:22px;
-border-radius:18px;
-box-shadow:0 8px 25px rgba(0,0,0,.35);
+.header{
+    background:linear-gradient(135deg,#00a000,#007400);
+    padding:28px 20px;
+    text-align:center;
+    box-shadow:0 4px 20px rgba(0,255,0,.35);
+    border-bottom-left-radius:18px;
+    border-bottom-right-radius:18px;
 }
 .balance{
 font-size:34px;
@@ -55,27 +53,60 @@ transition:.2s;
 
 <body>
 
-<div class="header">⚽ M7 BET</div>
+<div class="header">
 
-<div class="card">
-  <h2 id="name"></h2>
-  <p>User ID</p>
-  <h3 id="userid"></h3>
-  <div class="balance" id="balance"></div>
-  <button onclick="logout()">Logout</button>
+    <div style="font-size:34px;">⚽</div>
+
+    <div style="font-size:32px;font-weight:bold;">
+        M7 BET
+    </div>
+
+    <div style="font-size:14px;color:#d9ffd9;margin-top:6px;">
+        Football Betting Platform
+    </div>
+
 </div>
 
 <div class="card">
+
+    <div style="font-size:70px;">👤</div>
+
+    <h2 id="name"></h2>
+
+    <div style="color:#bbb;margin-top:8px;">
+        User ID
+    </div>
+
+    <h3 id="userid"></h3>
+
+    <div class="balance" id="balance"></div>
+
+    <div style="
+        margin:15px auto;
+        width:90%;
+        height:1px;
+        background:#444;
+    "></div>
+
+    <button onclick="logout()">
+        🚪 Logout
+    </button>
+
+</div>
+
+<div class="card">
+  <div style="font-size:45px;">💳</div>
   <h2>Deposit</h2>
   <input type="number" id="depositAmount" placeholder="Amount W">
-  <button onclick="depositRequest()">Deposit Request</button>
+  <button onclick="depositRequest()">💰 Deposit Request</button>
   <p id="msg"></p>
 </div>
 
 <div class="card">
+  <div style="font-size:45px;">🏧</div>
   <h2>Withdraw</h2>
   <input type="number" id="withdrawAmount" placeholder="Amount W">
-  <button onclick="withdrawRequest()">Withdraw Request</button>
+  <button onclick="withdrawRequest()">💸 Withdraw Request</button>
   <p id="withdrawMsg"></p>
 </div>
 
