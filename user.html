@@ -44,7 +44,7 @@ button{width:85%;padding:16px;margin:10px 0;background:#00b300;color:white;borde
   <div class="menuBtn" onclick="showSection('betSection')">
     <div class="menuIcon">⚽</div>Bet
   </div>
-  <div class="menuBtn" onclick="showSection('historySection')">
+  <div class="menuBtn" onclick="showHistoryPage()"
     <div class="menuIcon">📜</div>Bet History
   </div>
   <div class="menuBtn" onclick="showSection('depositSection')">
@@ -112,7 +112,15 @@ window.showSection = function(id){
   document.querySelectorAll(".section").forEach(s=>s.style.display="none");
   document.getElementById(id).style.display="block";
 };
+window.showSection = function(id){
+    document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+    document.getElementById(id).style.display="block";
+};
 
+window.showHistoryPage = function(){
+    showSection("historySection");
+    loadHistory();
+};
 async function loadMatches(){
 
   const matchList = document.getElementById("matchList");
