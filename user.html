@@ -152,22 +152,31 @@ async function loadMatches(){
         <div>📊 Result<br><b>${m.drawOdd || "-"}</b></div>
         <div>✈️<br><b>${m.awayOdd || "-"}</b></div>
       </div>
+      
+<div style="display:flex;justify-content:space-around;margin:15px 0;">
+    <div>⬆️ ဂိုးပေါ်<br><b>${m.overOdd || "--"}</b></div>
+    <div>⬇️ ဂိုးအောက်<br><b>${m.underOdd || "--"}</b></div>
+</div>
 
-      <div style="display:flex;justify-content:space-around;margin:15px 0;">
-        <div>⬆️ Over<br><b>${m.overOdd || "-"}</b></div>
-        <div>⬇️ Under<br><b>${m.underOdd || "-"}</b></div>
-      </div>
+<p><span class="badge">${statusText}</span></p>
 
-      <p><span class="badge">${statusText}</span></p>
+${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပိတ်ထားပါပြီ</p>" : `
 
-      ${isClosed ? "<p style='color:#ff4444;font-weight:bold;'>လောင်းပိတ်ထားပါပြီ</p>" : `
+<input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
 
-      <input id="stake_${d.id}" type="number" placeholder="လောင်းငွေ W">
+<button class="smallBtn"
+onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd || ""}')">🔴 Home</button>
 
-      <button class="smallBtn" onclick="placeBet('${d.id}','home','${m.homeTeam}','${m.homeOdd || ""}')">🔴 Home</button>
-      <button class="smallBtn" onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd || ""}')">🔵 Away</button>
-      <button class="smallBtn" onclick="placeBet('${d.id}','over','Over 2.5','${m.overOdd || ""}')">⬆️ Over</button>
-      <button class="smallBtn" onclick="placeBet('${d.id}','under','Under 2.5','${m.underOdd || ""}')">⬇️ Under</button>
+<button class="smallBtn"
+onclick="placeBet('${d.id}','away','${m.awayTeam}','${m.awayOdd || ""}')">🔵 Away</button>
+
+<button class="smallBtn"
+onclick="placeBet('${d.id}','over','ဂိုးပေါ်','${m.overOdd || ""}')">⬆️ ဂိုးပေါ်</button>
+
+<button class="smallBtn"
+onclick="placeBet('${d.id}','under','ဂိုးအောက်','${m.underOdd || ""}')">⬇️ ဂိုးအောက်</button>
+
+`}
 
       `}
 
