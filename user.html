@@ -286,15 +286,72 @@ async function loadHistory(){
   snap.forEach((d)=>{
     const b = d.data();
 
-    historyList.innerHTML += `
-      <div class="card">
-        <b>${b.team}</b><br>
-        Amount: ${b.amount} W<br>
-        Odd: ${b.odd || "-"}<br>
-        Status: <b>${String(b.status).toUpperCase()}</b><br>
-        Win Amount: ${b.winAmount || 0} W
-      </div>
-    `;
+    const color =
+b.status=="win" ? "#00ff66" :
+b.status=="lose" ? "#ff4444" :
+b.status=="halfwin" ? "#00c3ff" :
+b.status=="halflose" ? "#ffb400" :
+"#ffffff";
+
+const icon =
+b.status=="win" ? "✅" :
+b.status=="lose" ? "❌" :
+b.status=="halfwin" ? "🟢" :
+b.status=="halflose" ? "🟠" :
+"⏳";
+
+historyList.innerHTML += `
+
+<div style="
+background:#1f1f1f;
+padding:16px;
+margin:15px 0;
+border-radius:16px;
+border-left:6px solid ${color};
+text-align:left;
+">
+
+<div style="font-size:18px;font-weight:bold;">
+⚽ ${b.team}
+</div>
+
+<div style="margin-top:8px;">
+💰 <b>${Number(b.amount).toLocaleString()} W</b>
+</div>
+
+<div>
+🎯 ${b.odd || "-"}
+</div>
+
+<div>
+📅 ${b.createdAt?.toDate ?
+b.createdAt.toDate().toLocaleString() :
+""}
+</div>
+
+<div style="
+margin-top:10px;
+font-weight:bold;
+color:${color};
+">
+
+${icon} ${String(b.status).toUpperCase()}
+
+</div>
+
+${
+b.winAmount ?
+`<div style="margin-top:6px;color:#00ff66;">
+🏆 Win Amount :
+${Number(b.winAmount).toLocaleString()} W
+</div>`
+:
+""
+}
+
+</div>
+
+`;
   });
 }
 
