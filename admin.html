@@ -27,6 +27,14 @@ body{
   padding:15px;
   border-radius:12px;
 }
+  .btnGreen{
+    background:#008800;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
 .userCard{
   background:#2a2a2a;
   margin:12px 0;
@@ -496,6 +504,7 @@ async function loadBets(){
         <button onclick="betWin('${d.id}','${b.userId}','win')">✅ Win</button>
 <button class="btnBlue" onclick="betWin('${d.id}','${b.userId}','halfwin')">🟡 Half Win</button>
 <button class="btnGray" onclick="betWin('${d.id}','${b.userId}','halflose')">🟠 Half Lose</button>
+<button class="btnGreen" onclick="betResult('${d.id}','${b.userId}')">⚪ Result</button>
 <button class="btnRed" onclick="betLose('${d.id}')">❌ Lose</button>
       </div>
     `;
@@ -541,7 +550,17 @@ window.betLose = async function(betId){
   loadBets();
   loadDashboard();
 };
+window.betResult = async function(betId, userId){
 
+  await updateDoc(doc(db,"bets",betId),{
+    status:"result",
+    winAmount:0
+  });
+
+  loadBets();
+loadDashboard();
+  alert("Result ထည့်ပြီးပါပြီ");
+}
 
 async function loadMatches(){
 
