@@ -42,10 +42,10 @@ console.log(user);
       balance: user.balance
     }));
 
-if (user.role === "admin") {
-    window.location.href = "admin.html";
+if (String(user.role).trim() === "admin") {
+  window.location.replace("admin.html?v=400");
 } else {
-    window.location.href = "user.html";
+  window.location.replace("user.html?v=400");
 }
 
   } catch (error) {
