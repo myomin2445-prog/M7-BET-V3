@@ -31,7 +31,29 @@ button{width:85%;padding:16px;margin:10px 0;background:#00b300;color:white;borde
   <div style="font-size:32px;font-weight:bold;">M7 BET</div>
   <div style="font-size:14px;color:#d9ffd9;margin-top:6px;">Football Betting Platform</div>
 </div>
+<div class="menuGrid">
 
+  <div class="menuBtn" onclick="showSection('betSection')">
+    <div class="menuIcon">⚽</div>
+    <div>Bet</div>
+  </div>
+
+  <div class="menuBtn" onclick="showHistoryPage()">
+    <div class="menuIcon">📜</div>
+    <div>Bet History</div>
+  </div>
+
+  <div class="menuBtn" onclick="showSection('depositSection')">
+    <div class="menuIcon">💳</div>
+    <div>Deposit</div>
+  </div>
+
+  <div class="menuBtn" onclick="showSection('withdrawSection')">
+    <div class="menuIcon">🏧</div>
+    <div>Withdraw</div>
+  </div>
+
+</div>
 <div class="card">
   <div style="font-size:60px;">👤</div>
   <h2 id="name"></h2>
@@ -40,20 +62,7 @@ button{width:85%;padding:16px;margin:10px 0;background:#00b300;color:white;borde
   <div class="balance" id="balance"></div>
 </div>
 
-<div class="menuGrid">
-  <div class="menuBtn" onclick="showSection('betSection')">
-    <div class="menuIcon">⚽</div>Bet
-  </div>
-  <div class="menuBtn" onclick="showHistoryPage()"
-    <div class="menuIcon">📜</div>Bet History
-  </div>
-  <div class="menuBtn" onclick="showSection('depositSection')">
-    <div class="menuIcon">💳</div>Deposit
-  </div>
-  <div class="menuBtn" onclick="showSection('withdrawSection')">
-    <div class="menuIcon">🏧</div>Withdraw
-  </div>
-</div>
+
 
 <div class="card">
   <button onclick="logout()">🚪 Logout</button>
