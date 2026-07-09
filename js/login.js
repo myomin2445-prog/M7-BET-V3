@@ -25,7 +25,6 @@ loginBtn.addEventListener("click", async () => {
 
     const user = userSnap.data();
 console.log(user);
-alert(user.role);
     if (user.status !== "active") {
       message.innerText = "Account ပိတ်ထားပါတယ်";
       return;
